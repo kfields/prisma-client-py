@@ -1,7 +1,7 @@
 [package]
 name = "prisma-py-query-engine"
-version = "0.0.1"
-edition = "2018"
+version = "0.0.2"
+edition = "2021"
 authors = ["Robert Craigie <robert@craigie.dev>"]
 
 [lib]
@@ -10,29 +10,31 @@ path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-query-core = { git = "https://github.com/prisma/prisma-engines", rev = "33838b0" }
+query-core = { git = "https://github.com/prisma/prisma-engines" }
 pyo3-asyncio = { git = "https://github.com/awestlake87/pyo3-asyncio", features = ["attributes", "tokio-runtime"] }
-request-handlers = { git = "https://github.com/prisma/prisma-engines", rev = "33838b0" }
-query-connector = { git = "https://github.com/prisma/prisma-engines", rev = "33838b0" }
-user-facing-errors = { git = "https://github.com/prisma/prisma-engines", rev = "33838b0" }
-datamodel = { git = "https://github.com/prisma/prisma-engines", rev = "33838b0" }
-sql-connector = { git = "https://github.com/prisma/prisma-engines", package = "sql-query-connector", rev = "33838b0" }
-prisma-models = { git = "https://github.com/prisma/prisma-engines", rev = "33838b0"  }
-datamodel-connector = { git = "https://github.com/prisma/prisma-engines", rev = "33838b0" }
-url = "2"
-serde = "1"
-connection-string = "0.1"
-tokio = { version = "1", features = ["sync"] }
-serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
-tracing = "0.1"
-tracing-futures = "0.2"
-tracing-subscriber = "0.2"
-tracing-opentelemetry = "0.11"
-thiserror = "1.0"
-opentelemetry = "0.12"
-opentelemetry-otlp = { version = "0.5", features = ["tls", "tls-roots"] }
-crossbeam-channel = "0.5.1"
+request-handlers = { git = "https://github.com/prisma/prisma-engines" }
+query-connector = { git = "https://github.com/prisma/prisma-engines" }
+user-facing-errors = { git = "https://github.com/prisma/prisma-engines" }
+datamodel = { git = "https://github.com/prisma/prisma-engines" }
+sql-connector = { git = "https://github.com/prisma/prisma-engines", package = "sql-query-connector" }
+prisma-models = { git = "https://github.com/prisma/prisma-engines"  }
+datamodel-connector = { git = "https://github.com/prisma/prisma-engines" }
+quaint = { git = "https://github.com/prisma/quaint", features = ["fmt-sql"] }
+
+url = "2.2.2"
+serde = "1.0.137"
+connection-string = "0.1.14"
+tokio = { version = "1.19.2", features = ["sync"] }
+serde_json = { version = "1.0.81", features = ["preserve_order", "float_roundtrip"] }
+tracing = "0.1.35"
+tracing-futures = "0.2.5"
+tracing-subscriber = { version = "0.3.11", features = ["env-filter"] }
+tracing-opentelemetry = "0.17.3"
+thiserror = "1.0.31"
+opentelemetry = "0.17.0"
+opentelemetry-otlp = { version = "0.10.0", features = ["tls", "tls-roots"] }
+crossbeam-channel = "0.5.5"
 
 [dependencies.pyo3]
-version = "0.14.5"
+version = "0.16.5"
 features = ["extension-module"]

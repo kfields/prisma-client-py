@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,8 @@ from prisma.binaries.constants import PRISMA_CLI_NAME
 
 def test_skips_cached_binary(caplog: LogCaptureFixture) -> None:
     """Downloading an already existing binary does not actually do anything"""
+    if os.environ.get('PRISMA_CLIENT_ENGINE_TYPE') == 'library':
+        pytest.skip('unsupported configuration')
     # NOTE: this is not a great way to test this
     binary = BINARIES[0]
     binary.download()

@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from _pytest.capture import CaptureFixture
 
@@ -28,6 +30,9 @@ async def test_query_logging_disabled(
 @pytest.mark.asyncio
 async def test_logs_sql_queries(testdir: Testdir) -> None:
     """SQL queries are logged when enabled"""
+    if os.environ.get('PRISMA_CLIENT_ENGINE_TYPE') == 'library':
+        pytest.skip('unsupported configuration')
+
     client = Prisma(log_queries=True)
 
     # we have to redirect stdout to a file to capture it as

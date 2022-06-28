@@ -133,6 +133,9 @@ async def test_connect_timeout(mocker: MockerFixture) -> None:
 async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
     """Custom http options are passed to the HTTPX Client"""
 
+    if os.environ.get('PRISMA_CLIENT_ENGINE_TYPE') == 'library':
+        pytest.skip('unsupported configuration')
+
     def mock___init__(real__init__: Any, *args: Any, **kwargs: Any) -> None:
         # pass to real __init__ method to ensure types passed will actually work at runtime
         real__init__(*args, **kwargs)

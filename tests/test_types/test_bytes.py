@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from prisma import Prisma
 from prisma.fields import Base64
@@ -7,6 +9,10 @@ from prisma.models import Types
 @pytest.mark.asyncio
 async def test_filtering(client: Prisma) -> None:
     """Finding records by a Bytes value"""
+    """
+    if os.environ.get('PRISMA_CLIENT_ENGINE_TYPE') == 'library':
+        pytest.skip("unsupported configuration")
+    """
     async with client.batch_() as batcher:
         batcher.types.create({'bytes': Base64.encode(b'a')})
         batcher.types.create({'bytes': Base64.encode(b'b')})

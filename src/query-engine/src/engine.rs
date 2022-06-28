@@ -1,8 +1,18 @@
 /// This file has been modified from https://github.com/prisma/prisma-engines/blob/master/query-engine/query-engine-node-api/src/engine.rs
-use datamodel::{diagnostics::ValidatedConfiguration, Datamodel};
+//use datamodel::{diagnostics::ValidatedConfiguration, Datamodel};
+use datamodel::{dml::Datamodel, ValidatedConfiguration};
+
 use opentelemetry::global;
-use prisma_models::DatamodelConverter;
-use query_core::{executor, schema_builder, BuildMode, QueryExecutor, QuerySchema, TxId};
+//use prisma_models::DatamodelConverter;
+use prisma_models::InternalDataModelBuilder;
+
+//use query_core::{executor, schema_builder, BuildMode, QueryExecutor, QuerySchema, TxId};
+use query_core::{
+    executor,
+    schema::{QuerySchema},
+    schema_builder, QueryExecutor, TxId,
+};
+
 use request_handlers::{GraphQlBody, GraphQlHandler, PrismaResponse};
 use std::time::Duration;
 use std::{
@@ -214,8 +224,9 @@ impl QueryEngine {
                     .logger
                     .clone()
                     .with_logging(|| async move {
-                        let template = DatamodelConverter::convert(&builder.datamodel.ast);
-
+                        //let template = DatamodelConverter::convert(&builder.datamodel.ast);
+                        //let internal_data_model = InternalDataModelBuilder::from(&builder.datamodel.ast).build(db_name);
+                        let template = InternalDataModelBuilder::from(&builder.datamodel.ast);
                         // We only support one data source & generator at the moment, so take the first one (default not exposed yet).
                         let data_source =
                             builder.config.subject.datasources.first().ok_or_else(|| {
@@ -243,12 +254,20 @@ impl QueryEngine {
                         // Build internal data model
                         let internal_data_model = template.build(db_name);
 
-                        let query_schema = schema_builder::build(
+                        /*let query_schema = schema_builder::build(
                             internal_data_model,
                             BuildMode::Modern,
                             true, // enable raw queries
                             data_source.capabilities(),
                             preview_features,
+                        );*/
+
+                        let query_schema = schema_builder::build(
+                            internal_data_model,
+                            true, // enable raw queries
+                            data_source.capabilities(),
+                            preview_features,
+                            data_source.referential_integrity(),
                         );
 
                         Ok(ConnectedEngine {
@@ -314,8 +333,9 @@ impl QueryEngine {
                         span.set_parent(cx);
 
                         let body: GraphQlBody = serde_json::from_str(&query)?;
+                        let trace_id = trace.get("traceparent").map(String::from);
                         let handler = GraphQlHandler::new(engine.executor(), engine.query_schema());
-                        Ok(handler.handle(body, tx_id.map(TxId::from)).await)
+                        Ok(handler.handle(body, tx_id.map(TxId::from), trace_id).await)
                     })
                     .await
             }

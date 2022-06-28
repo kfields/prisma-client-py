@@ -60,13 +60,23 @@ impl ChannelLogger {
         let resource = Resource::new(vec![KeyValue::new("service.name", "query-engine-node-api")]);
         let config = Config::default().with_resource(resource);
 
-        let mut builder = opentelemetry_otlp::new_pipeline().with_trace_config(config);
-
+        /*let mut builder = opentelemetry_otlp::new_pipeline().with_trace_config(config);
         if let Some(endpoint) = endpoint {
             builder = builder.with_endpoint(endpoint);
         }
-
         let (tracer, _) = builder.install().unwrap();
+        */
+
+        // First, create a OTLP exporter builder. Configure it as you need.
+        let otlp_exporter = opentelemetry_otlp::new_exporter().tonic();
+        // Then pass it into pipeline builder
+        let tracer_result = opentelemetry_otlp::new_pipeline()
+                .tracing()
+                .with_trace_config(config)
+                .with_exporter(otlp_exporter)
+                .install_simple();
+
+        let tracer= tracer_result.unwrap();
 
         let telemetry_layer = tracing_opentelemetry::layer().with_tracer(tracer);
         let registry = EventRegistry::new()
