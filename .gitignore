@@ -146,3 +146,6 @@ src/prisma/generator/debug-params.json
 
 # OS files
 .DS_Store
+
+# Prisma generated classes
+__prisma__
